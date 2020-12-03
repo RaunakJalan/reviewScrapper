@@ -19,22 +19,23 @@ def homePage():
 @cross_origin()
 def index():
     if request.method == 'POST':
+        reviews = []
         searchString = request.form['content'].replace(" ","")
         try:
-            dbConn = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
-            db = dbConn["crawlerDb"]
-            reviews = db[searchString].find({})
+            # dbConn = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
+            # db = dbConn["crawlerDb"]
+            # reviews = db[searchString].find({})
             if reviews.count() > 0:
                 return render_template('results.html', reviews=reviews)
             else:
-                table = db[searchString]
+                # table = db[searchString]
                 prodReviewScrap = reviewScrapper(searchString)
                 reviews = prodReviewScrap.reviewScrap()
                 if reviews[0]['Name'] == '-':
                     return render_template('results.html', reviews=reviews)
                 else:
-                    for review in reviews:
-                        x = table.insert(review)
+                    # for review in reviews:
+                        # x = table.insert(review)
                     return render_template('results.html', reviews=reviews)
 
         except:
