@@ -8,8 +8,6 @@ from reviewScraping import reviewScrapper
 import sys
 int os
 
-port = int(os.environ.get('PORT', 5000))
-
 
 app = Flask(__name__)
 
@@ -49,4 +47,6 @@ def index():
 
 if __name__ == "__main__":
     # app.run(port=8001, debug=True)
+    port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, port = port)
+
