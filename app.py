@@ -1,13 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS,cross_origin
-import requests
-from bs4 import BeautifulSoup as bs
-from urllib.request import urlopen as uReq
-import pymongo
 from reviewScraping import reviewScrapper
-import sys
-int os
-
+import os
+import json
 
 app = Flask(__name__)
 
@@ -22,31 +17,20 @@ def index():
     if request.method == 'POST':
         reviews = []
         searchString = request.form['content'].replace(" ","")
-        try:
-            # dbConn = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
-            # db = dbConn["crawlerDb"]
-            # reviews = db[searchString].find({})
-            if reviews.count() > 0:
-                return render_template('results.html', reviews=reviews)
-            else:
-                # table = db[searchString]
-                prodReviewScrap = reviewScrapper(searchString)
-                reviews = prodReviewScrap.reviewScrap()
-                if reviews[0]['Name'] == '-':
-                    return render_template('results.html', reviews=reviews)
-                else:
-                    # for review in reviews:
-                        # x = table.insert(review)
-                    return render_template('results.html', reviews=reviews)
-
-        except:
-            return "Something is Wrong!"
-
+        if os.path.exists(searchString):
+            with open(searchString,"r") as review_file:
+                reviews = json.load(review_file)
+        else:
+            prodReviewScrap = reviewScrapper(searchString)
+            reviews = prodReviewScrap.reviewScrap()
+            with open(searchString,"w") as review_file:
+                json.dump(reviews, review_file)
+        return render_template('results.html', reviews=reviews)
     else:
         return render_template('index.html')
 
 if __name__ == "__main__":
     # app.run(port=8001, debug=True)
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT','5000'))
     app.run(debug=True, port = port)
 
